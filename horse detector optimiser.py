@@ -2,11 +2,12 @@ from scipy import special, optimize
 import matplotlib.pyplot as plt
 import numpy as np
 
-def model(peakThreshold, peakWidthThresholdMin,peakWidthThresholdRange, peakFrequencyThresholdMin, peakFrequencyThresholdRange,sampleWindow, data):
+def model(peakThresholdMin,peakThresholdRange, peakWidthThresholdMin,peakWidthThresholdRange, peakFrequencyThresholdMin, peakFrequencyThresholdRange,sampleWindow, data):
 
     #return np.array([1,1,1,1,1,1,1])
-    print("raw",peakThreshold, peakWidthThresholdMin,peakWidthThresholdRange, peakFrequencyThresholdMin, peakFrequencyThresholdRange,sampleWindow)
+    #print("raw",peakThresholdMin,peakThresholdRange, peakWidthThresholdMin,peakWidthThresholdRange, peakFrequencyThresholdMin, peakFrequencyThresholdRange,sampleWindow)
     inPeakFlag = False
+    validPeakAmp = True
     currentPeakWidth = 0
     validPeaks = 0
     #sampleWindow = 20
@@ -19,21 +20,25 @@ def model(peakThreshold, peakWidthThresholdMin,peakWidthThresholdRange, peakFreq
         feed = row
 
         #enter peak
-        if(feed > peakThreshold) and (not inPeakFlag):
+        if(feed > peakThresholdMin) and (not inPeakFlag):
             inPeakFlag = True
             #print("peaked")
         #exit peak
-        elif(feed < peakThreshold) and inPeakFlag:
+        elif(feed < peakThresholdMin) and inPeakFlag:
             inPeakFlag = False
             #count if peak width is valid
-            if(peakWidthThresholdMin < currentPeakWidth < (peakWidthThresholdMin + peakWidthThresholdRange) ):
+            if((peakWidthThresholdMin < currentPeakWidth < (peakWidthThresholdMin + peakWidthThresholdRange)) and validPeakAmp ):
                 validPeaks += 1
                 #print("valid peak", currentPeakWidth,time)
             currentPeakWidth = 0
+            validPeakAmp = True
 
         #time peak width
         if inPeakFlag:
             currentPeakWidth += 1
+
+        #if feed > (peakThresholdRange):
+         #   validPeakAmp = False
 
         #after sample wind passes log prediction to array
         if(time > sampleWindow):
@@ -62,23 +67,27 @@ def costFunction(theta):
     prediction = predict(theta)
     
     #actual = np.array([0,1,1,1,0,1,1])
-    actual = trainingData[:,2]
+    actual =  trainingData[:,2] #+ trainingData[:,1] 
     
-    print("pred",sum(prediction), sum(actual))
+    #print("pred",sum(prediction), sum(actual))
     
     absCost = np.absolute(prediction - actual)
     finalCost = sum(absCost)/len(absCost)
-    print('ran',finalCost,theta)
+    #print('ran',finalCost,theta)
     progress.append(finalCost)
     return finalCost
 
 def optimizeTheta():
 
-    sol = optimize.minimize(costFunction,x0=[0.1,0.1,0.1,0.1,0.1],method='Powell')
+    sol = optimize.minimize(costFunction,x0=[0.1,0.1,0.1,0.1,0.1,0.1],method='Powell')#Nelder-Mead
     return sol
 
 def predict(theta):
-    return model(theta[0]*70000,theta[1]*10,theta[2]*40,theta[3]*30,theta[4]*30,100,trainingData[:,0])
+    scaledTheta = scaleFeatures(theta)
+    return model(scaledTheta[0],scaledTheta[1],scaledTheta[2],scaledTheta[3],scaledTheta[4],scaledTheta[5],100,trainingData[:,0])
+    
+def scaleFeatures(theta):
+    return [theta[0]*70000,theta[1]*150000,theta[2]*10,theta[3]*40,theta[4]*30,theta[5]*30]
     
 
 trainingData = fetchTrainingData()
@@ -92,10 +101,24 @@ plt.plot(progress)
 
 
 plt.figure(1)
-plt.plot(np.array(predict(sol.x))*10000)
-plt.plot(np.array(trainingData[:,2])*10000)
 plt.plot(trainingData[:,0])
-plt.show()
+plt.plot(np.array(trainingData[:,2])*10000,linewidth=4)
+plt.plot(np.array(predict(sol.x))*10000,linewidth=2)
 
+finalBottom = sol.x[0]*700000
+finalTop = finalBottom + sol.x[1]*50000
+
+num = int(len(trainingData[:,2])/100)
+for i in range(num):
+    plt.axvline(x=i*100,linestyle='dashed',color='r') 
+
+#plt.axhline(y=finalTop)
+#plt.axhline(y=finalBottom)
+output = scaleFeatures(sol.x)
+#plt.axhline(y=finalTop)
+#plt.axhline(y=finalBottom)
+print("bttom line",finalBottom, "top line",finalTop)
+
+plt.show()
 
 
