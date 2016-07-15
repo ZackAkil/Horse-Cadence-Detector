@@ -1,14 +1,13 @@
-from scipy import special, optimize
+from scipy import optimize
 import matplotlib.pyplot as plt
 import numpy as np
 
-def model(peakThresholdMin,peakThresholdRange, peakWidthThresholdMin,peakWidthThresholdRange, peakFrequencyThresholdMin, peakFrequencyThresholdRange,sampleWindow, data):
+def model(peakThresholdMin, peakFrequencyThresholdMin,sampleWindow, data):
 
     #return np.array([1,1,1,1,1,1,1])
     #print("raw",peakThresholdMin,peakThresholdRange, peakWidthThresholdMin,peakWidthThresholdRange, peakFrequencyThresholdMin, peakFrequencyThresholdRange,sampleWindow)
     inPeakFlag = False
-    validPeakAmp = True
-    currentPeakWidth = 0
+
     validPeaks = 0
     #sampleWindow = 20
     time = 0;
@@ -17,32 +16,21 @@ def model(peakThresholdMin,peakThresholdRange, peakWidthThresholdMin,peakWidthTh
     for row in data:
 
         time += 1
-        feed = row
 
         #enter peak
-        if(feed > peakThresholdMin) and (not inPeakFlag):
+        if(row > peakThresholdMin) and (not inPeakFlag):
             inPeakFlag = True
             #print("peaked")
         #exit peak
-        elif(feed < peakThresholdMin) and inPeakFlag:
+        elif(row < peakThresholdMin) and inPeakFlag:
             inPeakFlag = False
             #count if peak width is valid
-            if((peakWidthThresholdMin < currentPeakWidth < (peakWidthThresholdMin + peakWidthThresholdRange)) and validPeakAmp ):
-                validPeaks += 1
-                #print("valid peak", currentPeakWidth,time)
-            currentPeakWidth = 0
-            validPeakAmp = True
+            validPeaks += 1
 
-        #time peak width
-        if inPeakFlag:
-            currentPeakWidth += 1
-
-        #if feed > (peakThresholdRange):
-         #   validPeakAmp = False
 
         #after sample wind passes log prediction to array
         if(time > sampleWindow):
-            label = 1 if(peakFrequencyThresholdMin < validPeaks < (peakFrequencyThresholdMin + peakFrequencyThresholdRange) ) else 0
+            label = 1 if(peakFrequencyThresholdMin < validPeaks) else 0
             for i in range(int(sampleWindow)):
                 output.append(label)
 
@@ -79,15 +67,15 @@ def costFunction(theta):
 
 def optimizeTheta():
 
-    sol = optimize.minimize(costFunction,x0=[0.1,0.1,0.1,0.1,0.1,0.1],method='Powell')#Nelder-Mead
+    sol = optimize.minimize(costFunction,x0=[0.0001,0.1],method='Powell')#Nelder-Mead
     return sol
 
 def predict(theta):
     scaledTheta = scaleFeatures(theta)
-    return model(scaledTheta[0],scaledTheta[1],scaledTheta[2],scaledTheta[3],scaledTheta[4],scaledTheta[5],100,trainingData[:,0])
+    return model(scaledTheta[0],scaledTheta[1],100,trainingData[:,0])
     
 def scaleFeatures(theta):
-    return [theta[0]*70000,theta[1]*150000,theta[2]*10,theta[3]*40,theta[4]*30,theta[5]*30]
+    return [theta[0]*70000000,theta[1]*30]
     
 
 trainingData = fetchTrainingData()
@@ -102,11 +90,10 @@ plt.plot(progress)
 
 plt.figure(1)
 plt.plot(trainingData[:,0])
-plt.plot(np.array(trainingData[:,2])*10000,linewidth=4)
+plt.plot(np.array(trainingData[:,2] )*10000,linewidth=4)
 plt.plot(np.array(predict(sol.x))*10000,linewidth=2)
 
 finalBottom = sol.x[0]*700000
-finalTop = finalBottom + sol.x[1]*50000
 
 num = int(len(trainingData[:,2])/100)
 for i in range(num):
@@ -117,7 +104,7 @@ for i in range(num):
 output = scaleFeatures(sol.x)
 #plt.axhline(y=finalTop)
 #plt.axhline(y=finalBottom)
-print("bttom line",finalBottom, "top line",finalTop)
+print("bttom line",finalBottom)
 
 plt.show()
 
