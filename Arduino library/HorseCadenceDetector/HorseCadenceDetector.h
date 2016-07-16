@@ -18,11 +18,11 @@ class HorseCadenceDetector
 
 	int _time = 0;
 	int _validTrotPeaks = 0;
-    int _validCantPeaks = 0;
+	int _validCantPeaks = 0;
 	int _currentCadence = 0;
 
 	bool _inTrotPeakFlag = false;
-    bool _inCantPeakFlag = false;
+	bool _inCantPeakFlag = false;
 
 	const int _peakCantThreshold = 10178;
 	const int _peakTrotThreshold = 879;
