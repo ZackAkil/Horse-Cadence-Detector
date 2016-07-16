@@ -3,20 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def model(peakThresholdMin, peakFrequencyThresholdMin,sampleWindow, data):
-
-    #return np.array([1,1,1,1,1,1,1])
-    #print("raw",peakThresholdMin,peakThresholdRange, peakWidthThresholdMin,peakWidthThresholdRange, peakFrequencyThresholdMin, peakFrequencyThresholdRange,sampleWindow)
+    
     inPeakFlag = False
-
     validPeaks = 0
-    #sampleWindow = 20
     time = 0;
     output = []
-
+    
     for row in data:
-
         time += 1
-
         #enter peak
         if(row > peakThresholdMin) and (not inPeakFlag):
             inPeakFlag = True
@@ -26,20 +20,15 @@ def model(peakThresholdMin, peakFrequencyThresholdMin,sampleWindow, data):
             inPeakFlag = False
             #count if peak width is valid
             validPeaks += 1
-
-
         #after sample wind passes log prediction to array
         if(time > sampleWindow):
             label = 1 if(peakFrequencyThresholdMin < validPeaks) else 0
             for i in range(int(sampleWindow)):
                 output.append(label)
-
             validPeaks = 0
             time = 0
-
     while(len(output) < len(data)):
         output.append(0)
-    
     return output
 
 
@@ -49,16 +38,11 @@ def fetchTrainingData():
     return a
 
 
-
 def costFunction(theta):
-    
     prediction = predict(theta)
-    
     #actual = np.array([0,1,1,1,0,1,1])
-    actual =  trainingData[:,2] #+ trainingData[:,1] 
-    
+    actual =  trainingData[:,2] + trainingData[:,1] 
     #print("pred",sum(prediction), sum(actual))
-    
     absCost = np.absolute(prediction - actual)
     finalCost = sum(absCost)/len(absCost)
     #print('ran',finalCost,theta)
@@ -66,7 +50,6 @@ def costFunction(theta):
     return finalCost
 
 def optimizeTheta():
-
     sol = optimize.minimize(costFunction,x0=[0.0001,0.1],method='Powell')#Nelder-Mead
     return sol
 
