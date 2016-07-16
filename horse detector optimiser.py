@@ -29,7 +29,6 @@ def model(peakCantThreshold,peakTrotThreshold, peakCantFrequencyThreshold, peakT
         
         #after sample wind passes log prediction to array
         if(time > sampleWindow):
-            
             label = 0
             if(validCantPeaks > peakCantFrequencyThreshold):
                 label = 2
@@ -51,18 +50,11 @@ def fetchTrainingData():
     a = genfromtxt('horse trianing data.csv', delimiter=',',skip_header =True)
     return a
 
-
 def costFunction(theta):
     prediction = predict(theta)
-    #actual = np.array([0,1,1,1,0,1,1])
     actual =  (trainingData[:,2] *2) + trainingData[:,1] 
-    #print("pred",sum(prediction), sum(actual))
     absCost = ((np.absolute(prediction - actual)) >= 1).astype(int)
-
-        
-    
     finalCost = sum(absCost)/len(absCost)
-    #print('ran',finalCost,theta)
     progress.append(finalCost)
     return finalCost
 
@@ -107,5 +99,3 @@ plt.axhline(y=output[0])
 print("bttom line",finalBottom)
 
 plt.show()
-
-

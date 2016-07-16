@@ -1,0 +1,3 @@
+HorseCadenceDetector	KEYWORD1
+GetCurrentCadence	KEYWORD2
+FeedData	KEYWORD2
