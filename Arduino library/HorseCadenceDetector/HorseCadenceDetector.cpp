@@ -24,12 +24,12 @@ void HorseCadenceDetector::FeedData (int gforce)
             
             if(_validCantPeaks > _peakCantFrequencyThreshold){
                 _currentCadence = CADENCE_TYPE_CANTER;
-            }
-            else if(_validTrotPeaks > _peakTrotFrequencyThreshold){
+            }else if(_validTrotPeaks > _peakTrotFrequencyThreshold){
                 _currentCadence = CADENCE_TYPE_TROT;
             }else{
             	_currentCadence = CADENCE_TYPE_OTHER;
             }
+            
             _validTrotPeaks = 0;
             _validCantPeaks = 0;
             _time = 0;
