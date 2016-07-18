@@ -12,14 +12,15 @@ class HorseCadenceDetector
 
 	HorseCadenceDetector();
 	int GetCurrentCadence();
-	void FeedData (int gforce);
+	void FeedData (int gforce, long currentTime);
 
 	private:
 
-	int _time = 0;
+	long _timeFrameStart = 0;
 	int _validTrotPeaks = 0;
 	int _validCantPeaks = 0;
 	int _currentCadence = 0;
+
 
 	bool _inTrotPeakFlag = false;
 	bool _inCantPeakFlag = false;
@@ -28,7 +29,7 @@ class HorseCadenceDetector
 	const int _peakTrotThreshold = 879;
 	const int _peakCantFrequencyThreshold = 3;
 	const int _peakTrotFrequencyThreshold = 3;
-	const int _sampleWindow = 100;
+	const int _sampleWindow = 2900;
 };
 
 #endif

@@ -2,9 +2,8 @@
 
 HorseCadenceDetector::HorseCadenceDetector(){}
 
-void HorseCadenceDetector::FeedData (int gforce)
+void HorseCadenceDetector::FeedData (int gforce, long currentTime)
 {
-        _time ++;
 
         if ((gforce > _peakTrotThreshold) && (!_inTrotPeakFlag)){
             _inTrotPeakFlag = true;
@@ -20,7 +19,7 @@ void HorseCadenceDetector::FeedData (int gforce)
             _validCantPeaks ++;
         }
         
-        if(_time > _sampleWindow){
+        if((currentTime - _timeFrameStart) > _sampleWindow){
             _currentCadence = CADENCE_TYPE_OTHER;
             if(_validCantPeaks > _peakCantFrequencyThreshold){
                 _currentCadence = CADENCE_TYPE_CANTER;
@@ -30,7 +29,7 @@ void HorseCadenceDetector::FeedData (int gforce)
             }
             _validTrotPeaks = 0;
             _validCantPeaks = 0;
-            _time = 0;
+            _timeFrameStart = currentTime;
         }
 }
 
