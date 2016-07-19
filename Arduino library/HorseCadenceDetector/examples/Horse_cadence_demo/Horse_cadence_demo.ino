@@ -47,7 +47,7 @@ void loop() {
   outputValue = map(sensorValue, 0, 1023, 0, 255);
   // change the analog out value:
     unsigned int scal = map(outputValue, 100, 160, 700, 11000);
-      hcd.FeedData(scal,millis());
+      hcd.FeedData(scal);
       //Serial.println(scal);
   }
 

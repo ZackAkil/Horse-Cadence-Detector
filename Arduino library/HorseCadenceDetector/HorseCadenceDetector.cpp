@@ -1,8 +1,9 @@
+#include "Arduino.h"
 #include "HorseCadenceDetector.h"
 
 HorseCadenceDetector::HorseCadenceDetector(){}
 
-void HorseCadenceDetector::FeedData (int gforce, long currentTime)
+void HorseCadenceDetector::FeedData (int gforce)
 {
 
         if ((gforce > _peakTrotThreshold) && (!_inTrotPeakFlag)){
@@ -19,7 +20,9 @@ void HorseCadenceDetector::FeedData (int gforce, long currentTime)
             _validCantPeaks ++;
         }
     
-        if((currentTime - _timeFrameStart) > _sampleWindow){
+        if((millis() - _timeFrameStart) > _sampleWindow){
+
+            _timeFrameStart = millis();
 
             if(_validCantPeaks > _peakCantFrequencyThreshold){
                 _currentCadence = CADENCE_TYPE_CANTER;
@@ -31,7 +34,6 @@ void HorseCadenceDetector::FeedData (int gforce, long currentTime)
             
             _validTrotPeaks = 0;
             _validCantPeaks = 0;
-            _timeFrameStart = currentTime;
         }
 }
 

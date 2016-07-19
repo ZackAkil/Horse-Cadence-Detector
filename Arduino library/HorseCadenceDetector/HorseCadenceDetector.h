@@ -12,7 +12,7 @@ class HorseCadenceDetector
 
 	HorseCadenceDetector();
 	int GetCurrentCadence();
-	void FeedData (int gforce, long currentTime);
+	void FeedData (int gforce);
 
 	private:
 
