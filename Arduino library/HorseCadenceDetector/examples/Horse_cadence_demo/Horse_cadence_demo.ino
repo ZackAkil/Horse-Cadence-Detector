@@ -38,20 +38,16 @@ void setup() {
 
 void loop() {
   
-  int count = 0;
-  
-  while(count < 100){
-    count++;
-      sensorValue = analogRead(analogInPin);
-  // map it to the range of the analog out:
+  // read sensor
+  sensorValue = analogRead(analogInPin);
+  // scaling values for my specific sensor (NOT NEEDED)
   outputValue = map(sensorValue, 0, 1023, 0, 255);
-  // change the analog out value:
-    unsigned int scal = map(outputValue, 100, 160, 700, 11000);
-      hcd.FeedData(scal);
-      //Serial.println(scal);
-  }
-
-
+  unsigned int scal = map(outputValue, 100, 160, 700, 11000);
+  
+  // feed sensor data as often as possible 
+  hcd.FeedData(scal);
+  
+  // fetch value whenever you want
   Serial.println(hcd.GetCurrentCadence());
 
 }
