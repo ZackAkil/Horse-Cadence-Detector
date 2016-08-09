@@ -6,9 +6,10 @@ class HorseCadenceDetector
 {
 	public: 
 
-	const char CADENCE_TYPE_CANTER = 2;
-	const char CADENCE_TYPE_TROT = 1;
-	const char CADENCE_TYPE_OTHER = 0;
+	const char CADENCE_TYPE_CANTER = 3;
+	const char CADENCE_TYPE_TROT = 2;
+    const char CADENCE_TYPE_WALK = 1;
+	const char CADENCE_TYPE_STILL = 0;
 
 	HorseCadenceDetector();
 	int GetCurrentCadence();
@@ -17,19 +18,21 @@ class HorseCadenceDetector
 	private:
 
 	long _timeFrameStart = 0;
-	int _validTrotPeaks = 0;
-	int _validCantPeaks = 0;
+    int _currentMaxValPerSubSample = 0;
+    int _subSampleCount = 0;
+    int _sampleSum = 0;
+    
 	int _currentCadence = 0;
 
 
-	bool _inTrotPeakFlag = false;
-	bool _inCantPeakFlag = false;
+	const int _canterThreshold = 10178;
+	const int _trotThreshold = 879;
+    const int _walkThreshold = 500;
+    const int _stillThreshold = 200;
 
-	const int _peakCantThreshold = 10178;
-	const int _peakTrotThreshold = 879;
-	const int _peakCantFrequencyThreshold = 3;
-	const int _peakTrotFrequencyThreshold = 3;
-	const int _sampleWindow = 2900;
+    
+	const int _subSampleWindow = 725;
+    const int _subSampleToUse = 4;
 };
 
 #endif

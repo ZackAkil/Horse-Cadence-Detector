@@ -5,36 +5,32 @@ HorseCadenceDetector::HorseCadenceDetector(){}
 
 void HorseCadenceDetector::FeedData (int gforce)
 {
-
-        if ((gforce > _peakTrotThreshold) && (!_inTrotPeakFlag)){
-            _inTrotPeakFlag = true;
-        }else if((gforce < _peakTrotThreshold) && _inTrotPeakFlag){
-            _inTrotPeakFlag = false;
-            _validTrotPeaks ++;
-        }
-            
-        if((gforce > _peakCantThreshold) && (!_inCantPeakFlag)){
-            _inCantPeakFlag = true;
-        }else if((gforce < _peakCantThreshold) && _inCantPeakFlag){
-            _inCantPeakFlag = false;
-            _validCantPeaks ++;
-        }
     
-        if((millis() - _timeFrameStart) > _sampleWindow){
+    if(gforce > _currentMaxValPerSubSample){
+        _currentMaxValPerSubSample = gforce;
+    }
+    
+    if((millis() - _timeFrameStart) > _subSampleWindow){
+        _sampleSum += _currentMaxValPerSubSample;
+        _subSampleCount ++;
+        _timeFrameStart = millis();
+        _currentMaxValPerSubSample = 0;  
+    }
 
-            _timeFrameStart = millis();
+    if(_subSampleCount >= _subSampleToUse){
+        int avg = _sampleSum / _subSampleToUse;
 
-            if(_validCantPeaks > _peakCantFrequencyThreshold){
-                _currentCadence = CADENCE_TYPE_CANTER;
-            }else if(_validTrotPeaks > _peakTrotFrequencyThreshold){
-                _currentCadence = CADENCE_TYPE_TROT;
-            }else{
-            	_currentCadence = CADENCE_TYPE_OTHER;
-            }
-            
-            _validTrotPeaks = 0;
-            _validCantPeaks = 0;
+        if(avg < _stillThreshold){
+            _currentCadence = CADENCE_TYPE_STILL;
+        }else if(avg < _walkThreshold){
+            _currentCadence = CADENCE_TYPE_WALK;
+        }else if(avg < _trotThreshold){
+            _currentCadence = CADENCE_TYPE_TROT;
+        }else if(avg < _canterThreshold){
+            _currentCadence = CADENCE_TYPE_CANTER;
         }
+    }
+        
 }
 
 int HorseCadenceDetector::GetCurrentCadence()
