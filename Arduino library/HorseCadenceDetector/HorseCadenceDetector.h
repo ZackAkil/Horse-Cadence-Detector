@@ -26,6 +26,7 @@ class HorseCadenceDetector
 	char _currentCadence = 0;
 
 
+<<<<<<< HEAD
     const long _canterThreshold = 20000;
     const int _trotThreshold = 11500;
     const int _walkThreshold = 7000;
