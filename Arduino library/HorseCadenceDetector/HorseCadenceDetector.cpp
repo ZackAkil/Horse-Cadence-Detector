@@ -5,7 +5,7 @@ HorseCadenceDetector::HorseCadenceDetector(){}
 
 void HorseCadenceDetector::FeedData (int gforce)
 {
-    
+
     if(gforce > _currentMaxValPerSubSample){
         _currentMaxValPerSubSample = gforce;
     }
@@ -18,19 +18,22 @@ void HorseCadenceDetector::FeedData (int gforce)
     }
 
     if(_subSampleCount >= _subSampleToUse){
-        int avg = _sampleSum / _subSampleToUse;
+        _sampleAvg  = _sampleSum / _subSampleToUse;
 
-        if(avg < _stillThreshold){
+        if(_sampleAvg < _stillThreshold){
             _currentCadence = CADENCE_TYPE_STILL;
-        }else if(avg < _walkThreshold){
+        }else if(_sampleAvg < _walkThreshold){
             _currentCadence = CADENCE_TYPE_WALK;
-        }else if(avg < _trotThreshold){
+        }else if(_sampleAvg < _trotThreshold){
             _currentCadence = CADENCE_TYPE_TROT;
-        }else if(avg < _canterThreshold){
+        }else if(_sampleAvg < _canterThreshold){
             _currentCadence = CADENCE_TYPE_CANTER;
         }
+
+        _sampleSum = 0;
+        _subSampleCount = 0;
     }
-        
+
 }
 
 int HorseCadenceDetector::GetCurrentCadence()
