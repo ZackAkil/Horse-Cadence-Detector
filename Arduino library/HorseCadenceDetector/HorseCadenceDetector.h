@@ -25,10 +25,10 @@ class HorseCadenceDetector
 	int _currentCadence = 0;
 
 
-	const int _canterThreshold = 10178;
-	const int _trotThreshold = 879;
-    const int _walkThreshold = 500;
-    const int _stillThreshold = 200;
+	const int _canterThreshold = 20000;
+	const int _trotThreshold = 11500;
+    const int _walkThreshold = 7000;
+    const int _stillThreshold = 4500;
 
     
 	const int _subSampleWindow = 725;
