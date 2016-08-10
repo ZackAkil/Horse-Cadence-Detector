@@ -130,6 +130,52 @@ def convertData4(data):
         output.append(output[len(output)-1])
     return output
     
+    
+def predict(data, still, walk, trot, cant):
+    time = 0
+    output = []
+    subSampleCount = 4
+    subSampleWindow = 25
+    
+    sampleSum = 0
+    currentMax = 0
+    sampleCount = 0
+
+    #for x in range(subSampleWindow*subSampleCount):
+     #   output.append(0)
+    
+    for row in data:
+        time += 1
+        
+        if row > currentMax:
+            currentMax = row
+        
+        if time == subSampleWindow:
+            sampleSum += currentMax
+            sampleCount += 1
+            time = 0
+            currentMax = 0
+        
+        if sampleCount == subSampleCount:
+            val = sampleSum / subSampleCount
+            setVal = 0
+            if val < still:
+                setVal = 0
+            elif val < walk:
+                setVal = 1
+            elif val< trot:
+                setVal = 2
+            elif val < cant:
+                setVal = 3
+                
+            for x in range(subSampleWindow*subSampleCount):
+                output.append(setVal)
+            sampleSum = 0
+            sampleCount = 0
+            
+    while(len(output) < len(data)):
+        output.append(output[len(output)-1])
+    return output
 
 fetch = fetchTrainingData()
 
@@ -153,12 +199,18 @@ plt.figure(1)
 plt.plot(data)
 plt.plot(index,fetch[:,2])
 plt.plot(index,fetch[:,3],c ='r')
-
-#plt.figure(2)
 plt.plot(dataConvert)
 plt.plot(index,fetch[:,2])
 plt.plot(index,fetch[:,3],c ='r')
+plt.show()
 
+predictVal = predict(data, 4500, 7000, 11500, 20000)
+#print(predictVal)
+plt.figure(2)
+plt.scatter(index, data,c = predictVal,edgecolors='none')
+plt.plot(index,fetch[:,2],linewidth=3)
+plt.plot(index,fetch[:,3],c ='r',linewidth=3)
+plt.plot(dataConvert,linewidth=2)
 plt.show()
 
 print(8)
