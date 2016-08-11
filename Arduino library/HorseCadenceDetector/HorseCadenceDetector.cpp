@@ -26,7 +26,7 @@ void HorseCadenceDetector::FeedData (int gforce)
             _currentCadence = CADENCE_TYPE_WALK;
         }else if(_sampleAvg < _trotThreshold){
             _currentCadence = CADENCE_TYPE_TROT;
-        }else if(_sampleAvg < _canterThreshold){
+        }else{
             _currentCadence = CADENCE_TYPE_CANTER;
         }
 
