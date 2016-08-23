@@ -17,7 +17,7 @@ class HorseCadenceDetector
 
 	private:
 
-	int _timeFrameStart = 0;
+	long _timeFrameStart = 0;
     int _currentMaxValPerSubSample = 0;
     int _subSampleCount = 0;
     long _sampleSum = 0;
